@@ -1,0 +1,6 @@
+ÀÄsample1
+   ÃÄMAIN  0/60  Ram=1
+   ³  ÀÄ@cinit1  (Inline)  Ram=0
+   ÃÄext_isr  0/236  Ram=4
+   ³  ÀÄ@goto10504  0/9  Ram=0
+   ÀÄtimer1_isr  0/9  Ram=0

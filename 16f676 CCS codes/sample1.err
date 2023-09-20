@@ -1,0 +1,21 @@
+*** Error 49 "sample1.c" Line 137(15,19): Expecting LVALUE such as a variable name  or  * expression
+*** Error 49 "sample1.c" Line 139(11,15): Expecting LVALUE such as a variable name  or  * expression
+*** Error 49 "sample1.c" Line 150(5,9): Expecting LVALUE such as a variable name  or  * expression
+*** Error 49 "sample1.c" Line 168(5,11): Expecting LVALUE such as a variable name  or  * expression
+*** Error 49 "sample1.c" Line 169(5,11): Expecting LVALUE such as a variable name  or  * expression
+*** Error 49 "sample1.c" Line 170(5,11): Expecting LVALUE such as a variable name  or  * expression
+*** Error 12 "sample1.c" Line 185(5,9): Undefined identifier   TMR0
+*** Error 12 "sample1.c" Line 186(5,9): Undefined identifier   T0IE
+*** Error 12 "sample1.c" Line 187(5,9): Undefined identifier   T0IF
+*** Error 12 "sample1.c" Line 188(5,10): Undefined identifier   count
+*** Error 12 "sample1.c" Line 193(5,9): Undefined identifier   T0IE
+*** Error 49 "sample1.c" Line 201(5,10): Expecting LVALUE such as a variable name  or  * expression
+*** Error 49 "sample1.c" Line 202(5,10): Expecting LVALUE such as a variable name  or  * expression
+*** Error 49 "sample1.c" Line 203(5,10): Expecting LVALUE such as a variable name  or  * expression
+*** Error 49 "sample1.c" Line 204(5,10): Expecting LVALUE such as a variable name  or  * expression
+*** Error 12 "sample1.c" Line 226(20,21): Undefined identifier  -- clear_interrupts
+*** Error 12 "sample1.c" Line 227(20,21): Undefined identifier  -- enable_interrupt
+*** Error 12 "sample1.c" Line 235(20,21): Undefined identifier  -- EEPROM_READ
+*** Error 12 "sample1.c" Line 236(20,21): Undefined identifier  -- EEPROM_READ
+      19 Errors,  0 Warnings.
+Build Failed.

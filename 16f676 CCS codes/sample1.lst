@@ -1,0 +1,517 @@
+CCS PCM C Compiler, Version 5.015, 5967               08-Oct-20 18:03
+
+               Filename:   E:\Ahmad project\CCS\16f676 CCS codes\sample1.lst
+
+               ROM used:   380 words (37%)
+                           Largest free fragment is 644
+               RAM used:   24 (38%) at main() level
+                           28 (44%) worst case
+               Stack used: 2 locations (0 in main + 2 for interrupts)
+               Stack size: 8
+
+*
+0000:  MOVLW  01
+0001:  MOVWF  0A
+0002:  GOTO   03C
+0003:  NOP
+0004:  BTFSC  03.5
+0005:  GOTO   00A
+0006:  MOVWF  24
+0007:  SWAPF  03,W
+0008:  MOVWF  25
+0009:  GOTO   00F
+000A:  BCF    03.5
+000B:  MOVWF  24
+000C:  SWAPF  03,W
+000D:  MOVWF  25
+000E:  BSF    25.1
+000F:  MOVF   0A,W
+0010:  MOVWF  2B
+0011:  CLRF   0A
+0012:  BCF    03.7
+0013:  SWAPF  24,F
+0014:  MOVF   04,W
+0015:  MOVWF  26
+0016:  MOVF   20,W
+0017:  MOVWF  27
+0018:  MOVF   21,W
+0019:  MOVWF  28
+001A:  MOVF   22,W
+001B:  MOVWF  29
+001C:  MOVF   23,W
+001D:  MOVWF  2A
+001E:  BCF    03.5
+001F:  BTFSS  0B.4
+0020:  GOTO   023
+0021:  BTFSC  0B.1
+0022:  GOTO   042
+0023:  MOVLW  8C
+0024:  MOVWF  04
+0025:  BTFSS  00.0
+0026:  GOTO   029
+0027:  BTFSC  0C.0
+0028:  GOTO   137
+0029:  MOVF   26,W
+002A:  MOVWF  04
+002B:  MOVF   27,W
+002C:  MOVWF  20
+002D:  MOVF   28,W
+002E:  MOVWF  21
+002F:  MOVF   29,W
+0030:  MOVWF  22
+0031:  MOVF   2A,W
+0032:  MOVWF  23
+0033:  MOVF   2B,W
+0034:  MOVWF  0A
+0035:  SWAPF  25,W
+0036:  MOVWF  03
+0037:  BCF    03.5
+0038:  SWAPF  24,W
+0039:  BTFSC  25.1
+003A:  BSF    03.5
+003B:  RETFIE
+003C:  CALL   3FF
+003D:  BSF    03.5
+003E:  MOVWF  10
+003F:  MOVLW  00
+0040:  MOVWF  0A
+0041:  GOTO   140
+.................... #include <16F676.h> 
+.................... //////////// Standard Header file for the PIC16F676 device //////////////// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... ////        (C) Copyright 1996, 2013 Custom Computer Services          //// 
+.................... //// This source code may only be used by licensed users of the CCS C  //// 
+.................... //// compiler.  This source code may only be distributed to other      //// 
+.................... //// licensed users of the CCS C compiler.  No other use, reproduction //// 
+.................... //// or distribution is permitted without written permission.          //// 
+.................... //// Derivative programs created using this software in object code    //// 
+.................... //// form are not restricted in any way.                               //// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... #device PIC16F676 
+*
+012E:  BSF    0A.0
+012F:  BCF    0A.1
+0130:  BCF    0A.2
+0131:  ADDWF  02,F
+0132:  GOTO   05A
+0133:  GOTO   066
+0134:  GOTO   084
+0135:  GOTO   0A4
+0136:  GOTO   0BF
+....................  
+.................... #list 
+....................  
+.................... #fuses HS 
+.................... #fuses PUT 
+.................... #fuses INTRC_IO 
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+.................... #FUSES NOMCLR                   //Master Clear pin used for I/O 
+.................... #FUSES NOBROWNOUT               //No brownout reset 
+.................... #use delay (clock=4Mhz) 
+....................   
+.................... short nec_ok = 0; 
+.................... unsigned int8 nec_state = 0, command, inv_command, i; 
+.................... unsigned int16 address; 
+.................... unsigned int32 nec_code; 
+.................... #INT_EXT                                         // External interrupt 
+.................... void ext_isr(void){ 
+....................   unsigned int16 time; 
+....................   if(nec_state != 0){ 
+*
+0042:  MOVF   2D,F
+0043:  BTFSC  03.2
+0044:  GOTO   054
+....................     time = get_timer1();                         // Store Timer1 value 
+0045:  MOVF   0F,W
+0046:  MOVWF  23
+0047:  MOVF   0E,W
+0048:  MOVWF  20
+0049:  MOVF   0F,W
+004A:  SUBWF  23,W
+004B:  BTFSS  03.2
+004C:  GOTO   045
+004D:  MOVF   20,W
+004E:  MOVWF  38
+004F:  MOVF   23,W
+0050:  MOVWF  39
+....................     set_timer1(0);                               // Reset Timer1 
+0051:  CLRF   0E
+0052:  CLRF   0F
+0053:  CLRF   0E
+....................   } 
+....................   switch(nec_state){ 
+0054:  MOVF   2D,W
+0055:  ADDLW  FB
+0056:  BTFSC  03.0
+0057:  GOTO   129
+0058:  ADDLW  05
+0059:  GOTO   12E
+....................     case 0 :                                     // Start receiving IR data (we're at the beginning of 9ms pulse) 
+....................       setup_timer_1( T1_INTERNAL | T1_DIV_BY_2 );   // Enable Timer1 module with internal clock source and prescaler = 2 
+005A:  MOVLW  15
+005B:  MOVWF  10
+....................       set_timer1(0);                             // Reset Timer1 value 
+005C:  CLRF   0E
+005D:  CLRF   0F
+005E:  CLRF   0E
+....................       nec_state = 1;                             // Next state: end of 9ms pulse (start of 4.5ms space) 
+005F:  MOVLW  01
+0060:  MOVWF  2D
+....................       i = 0; 
+0061:  CLRF   30
+....................       ext_int_edge( L_TO_H );                    // Toggle external interrupt edge 
+0062:  BSF    03.5
+0063:  BSF    01.6
+....................       return; 
+0064:  GOTO   12A
+0065:  BCF    03.5
+....................     case 1 :                                     // End of 9ms pulse 
+....................       if((time > 4750) || (time < 4250)){        // Invalid interval ==> stop decoding and reset 
+0066:  MOVF   39,W
+0067:  SUBLW  11
+0068:  BTFSC  03.0
+0069:  GOTO   071
+006A:  XORLW  FF
+006B:  BTFSS  03.2
+006C:  GOTO   07B
+006D:  MOVF   38,W
+006E:  SUBLW  8E
+006F:  BTFSS  03.0
+0070:  GOTO   07B
+0071:  MOVF   39,W
+0072:  SUBLW  10
+0073:  BTFSS  03.0
+0074:  GOTO   07E
+0075:  BTFSS  03.2
+0076:  GOTO   07B
+0077:  MOVF   38,W
+0078:  SUBLW  99
+0079:  BTFSS  03.0
+007A:  GOTO   07E
+....................         nec_state = 0;                           // Reset decoding process 
+007B:  CLRF   2D
+....................         setup_timer_1(T1_DISABLED);              // Stop Timer1 module 
+007C:  CLRF   10
+....................       } 
+007D:  GOTO   080
+....................       else 
+....................         nec_state = 2;                           // Next state: end of 4.5ms space (start of 562탎 pulse) 
+007E:  MOVLW  02
+007F:  MOVWF  2D
+....................       ext_int_edge( H_TO_L );                    // Toggle external interrupt edge 
+0080:  BSF    03.5
+0081:  BCF    01.6
+....................       return; 
+0082:  GOTO   12A
+0083:  BCF    03.5
+....................     case 2 :                                     // End of 4.5ms space 
+....................       if((time > 2500) || (time < 2000)){        // Invalid interval ==> stop decoding and reset 
+0084:  MOVF   39,W
+0085:  SUBLW  08
+0086:  BTFSC  03.0
+0087:  GOTO   08F
+0088:  XORLW  FF
+0089:  BTFSS  03.2
+008A:  GOTO   099
+008B:  MOVF   38,W
+008C:  SUBLW  C4
+008D:  BTFSS  03.0
+008E:  GOTO   099
+008F:  MOVF   39,W
+0090:  SUBLW  07
+0091:  BTFSS  03.0
+0092:  GOTO   09E
+0093:  BTFSS  03.2
+0094:  GOTO   099
+0095:  MOVF   38,W
+0096:  SUBLW  CF
+0097:  BTFSS  03.0
+0098:  GOTO   09E
+....................         nec_state = 0;                           // Reset decoding process 
+0099:  CLRF   2D
+....................         setup_timer_1(T1_DISABLED);              // Stop Timer1 module 
+009A:  CLRF   10
+....................         return; 
+009B:  BSF    03.5
+009C:  GOTO   12A
+009D:  BCF    03.5
+....................       } 
+....................       nec_state = 3;                             // Next state: end of 562탎 pulse (start of 562탎 or 1687탎 space) 
+009E:  MOVLW  03
+009F:  MOVWF  2D
+....................       ext_int_edge( L_TO_H );                    // Toggle external interrupt edge 
+00A0:  BSF    03.5
+00A1:  BSF    01.6
+....................       return; 
+00A2:  GOTO   12A
+00A3:  BCF    03.5
+....................     case 3 :                                     // End of 562탎 pulse 
+....................       if((time > 350) || (time < 200)){          // Invalid interval ==> stop decoding and reset 
+00A4:  MOVF   39,W
+00A5:  SUBLW  00
+00A6:  BTFSC  03.0
+00A7:  GOTO   0AF
+00A8:  XORLW  FF
+00A9:  BTFSS  03.2
+00AA:  GOTO   0B6
+00AB:  MOVF   38,W
+00AC:  SUBLW  5E
+00AD:  BTFSS  03.0
+00AE:  GOTO   0B6
+00AF:  MOVF   39,F
+00B0:  BTFSS  03.2
+00B1:  GOTO   0B9
+00B2:  MOVF   38,W
+00B3:  SUBLW  C7
+00B4:  BTFSS  03.0
+00B5:  GOTO   0B9
+....................         nec_state = 0;                           // Reset decoding process 
+00B6:  CLRF   2D
+....................         setup_timer_1(T1_DISABLED);              // Disable Timer1 module 
+00B7:  CLRF   10
+....................       } 
+00B8:  GOTO   0BB
+....................       else 
+....................         nec_state = 4;                           // Next state: end of 562탎 or 1687탎 space 
+00B9:  MOVLW  04
+00BA:  MOVWF  2D
+....................       ext_int_edge( H_TO_L );                    // Toggle external interrupt edge 
+00BB:  BSF    03.5
+00BC:  BCF    01.6
+....................       return; 
+00BD:  GOTO   12A
+00BE:  BCF    03.5
+....................     case 4 :                                     // End of 562탎 or 1687탎 space 
+....................       if((time > 900) || (time < 200)){         // Invalid interval ==> stop decoding and reset 
+00BF:  MOVF   39,W
+00C0:  SUBLW  02
+00C1:  BTFSC  03.0
+00C2:  GOTO   0CA
+00C3:  XORLW  FF
+00C4:  BTFSS  03.2
+00C5:  GOTO   0D1
+00C6:  MOVF   38,W
+00C7:  SUBLW  84
+00C8:  BTFSS  03.0
+00C9:  GOTO   0D1
+00CA:  MOVF   39,F
+00CB:  BTFSS  03.2
+00CC:  GOTO   0D6
+00CD:  MOVF   38,W
+00CE:  SUBLW  C7
+00CF:  BTFSS  03.0
+00D0:  GOTO   0D6
+....................         nec_state = 0;                           // Reset decoding process 
+00D1:  CLRF   2D
+....................         setup_timer_1(T1_DISABLED);              // Disable Timer1 module 
+00D2:  CLRF   10
+....................         return; 
+00D3:  BSF    03.5
+00D4:  GOTO   12A
+00D5:  BCF    03.5
+....................       } 
+....................       if( time > 500)                           // If space width > 1ms (short space) 
+00D6:  MOVF   39,W
+00D7:  SUBLW  00
+00D8:  BTFSC  03.0
+00D9:  GOTO   0FD
+00DA:  XORLW  FF
+00DB:  BTFSS  03.2
+00DC:  GOTO   0E1
+00DD:  MOVF   38,W
+00DE:  SUBLW  F4
+00DF:  BTFSC  03.0
+00E0:  GOTO   0FD
+....................         bit_set(nec_code, (31 - i));             // Write 1 to bit (31 - i) 
+00E1:  MOVF   30,W
+00E2:  SUBLW  1F
+00E3:  MOVWF  3A
+00E4:  CLRF   23
+00E5:  CLRF   22
+00E6:  CLRF   21
+00E7:  MOVLW  01
+00E8:  MOVWF  20
+00E9:  MOVF   3A,W
+00EA:  MOVWF  3B
+00EB:  BTFSC  03.2
+00EC:  GOTO   0F4
+00ED:  BCF    03.0
+00EE:  RLF    20,F
+00EF:  RLF    21,F
+00F0:  RLF    22,F
+00F1:  RLF    23,F
+00F2:  DECFSZ 3B,F
+00F3:  GOTO   0ED
+00F4:  MOVF   20,W
+00F5:  IORWF  33,F
+00F6:  MOVF   21,W
+00F7:  IORWF  34,F
+00F8:  MOVF   22,W
+00F9:  IORWF  35,F
+00FA:  MOVF   23,W
+00FB:  IORWF  36,F
+00FC:  GOTO   11D
+....................       else                                       // If space width < 1ms (long space) 
+....................         bit_clear(nec_code, (31 - i));           // Write 0 to bit (31 - i) 
+00FD:  MOVF   30,W
+00FE:  SUBLW  1F
+00FF:  MOVWF  3A
+0100:  CLRF   23
+0101:  CLRF   22
+0102:  CLRF   21
+0103:  MOVLW  01
+0104:  MOVWF  20
+0105:  MOVF   3A,W
+0106:  MOVWF  3B
+0107:  BTFSC  03.2
+0108:  GOTO   110
+0109:  BCF    03.0
+010A:  RLF    20,F
+010B:  RLF    21,F
+010C:  RLF    22,F
+010D:  RLF    23,F
+010E:  DECFSZ 3B,F
+010F:  GOTO   109
+0110:  MOVLW  FF
+0111:  XORWF  20,F
+0112:  XORWF  21,F
+0113:  XORWF  22,F
+0114:  XORWF  23,F
+0115:  MOVF   20,W
+0116:  ANDWF  33,F
+0117:  MOVF   21,W
+0118:  ANDWF  34,F
+0119:  MOVF   22,W
+011A:  ANDWF  35,F
+011B:  MOVF   23,W
+011C:  ANDWF  36,F
+....................       i++; 
+011D:  INCF   30,F
+....................       if(i > 31){                                // If all bits are received 
+011E:  MOVF   30,W
+011F:  SUBLW  1F
+0120:  BTFSC  03.0
+0121:  GOTO   124
+....................         nec_ok = 1;                              // Decoding process OK 
+0122:  BSF    2C.0
+....................         disable_interrupts(INT_EXT);             // Disable the external interrupt 
+0123:  BCF    0B.4
+....................       } 
+....................       nec_state = 3;                             // Next state: end of 562탎 pulse (start of 562탎 or 1687탎 space) 
+0124:  MOVLW  03
+0125:  MOVWF  2D
+....................       ext_int_edge( L_TO_H );                    // Toggle external interrupt edge 
+0126:  BSF    03.5
+0127:  BSF    01.6
+0128:  BCF    03.5
+0129:  BSF    03.5
+....................   } 
+.................... } 
+012A:  BCF    03.5
+012B:  BCF    0B.1
+012C:  BCF    0A.3
+012D:  GOTO   029
+.................... #INT_TIMER1                                      // Timer1 interrupt (used for time out) 
+.................... void timer1_isr(void){ 
+....................   nec_state = 0;                                 // Reset decoding process 
+*
+0137:  CLRF   2D
+....................   ext_int_edge( H_TO_L );                        // External interrupt edge from high to low 
+0138:  BSF    03.5
+0139:  BCF    01.6
+....................   setup_timer_1(T1_DISABLED);                    // Disable Timer1 module 
+013A:  BCF    03.5
+013B:  CLRF   10
+....................   clear_interrupt(INT_TIMER1);                   // Clear Timer1 interrupt flag bit 
+013C:  BCF    0C.0
+013D:  BCF    0C.0
+013E:  BCF    0A.3
+013F:  GOTO   029
+.................... } 
+.................... void main(){ 
+0140:  MOVF   03,W
+0141:  ANDLW  1F
+0142:  MOVWF  03
+0143:  BCF    2C.0
+0144:  CLRF   2D
+0145:  BCF    1F.6
+0146:  MOVLW  00
+0147:  BSF    03.5
+0148:  MOVWF  11
+0149:  MOVLW  07
+014A:  BCF    03.5
+014B:  MOVWF  19
+....................   enable_interrupts(GLOBAL);                     // Enable global interrupts 
+014C:  MOVLW  C0
+014D:  IORWF  0B,F
+....................   enable_interrupts(INT_EXT_H2L);                // Enable external interrupt 
+014E:  BSF    0B.4
+014F:  BSF    03.5
+0150:  BCF    01.6
+....................   clear_interrupt(INT_TIMER1);                   // Clear Timer1 interrupt flag bit 
+0151:  BCF    03.5
+0152:  BCF    0C.0
+....................   enable_interrupts(INT_TIMER1);                 // Enable Timer1 interrupt 
+0153:  BSF    03.5
+0154:  BSF    0C.0
+....................    
+....................   while(TRUE){   
+....................    
+....................     if(nec_ok){                                  // If the mcu successfully receives NEC protocol message 
+0155:  BCF    03.5
+0156:  BTFSS  2C.0
+0157:  GOTO   17A
+....................       nec_ok = 0;                                // Reset decoding process 
+0158:  BCF    2C.0
+....................       nec_state = 0; 
+0159:  CLRF   2D
+....................       setup_timer_1(T1_DISABLED);                // Disable Timer1 module 
+015A:  CLRF   10
+....................       address = nec_code >> 16; 
+015B:  MOVF   35,W
+015C:  MOVWF  31
+015D:  MOVF   36,W
+015E:  MOVWF  32
+....................       command = nec_code >> 8; 
+015F:  MOVF   34,W
+0160:  MOVWF  2E
+....................       inv_command = nec_code; 
+0161:  MOVF   33,W
+0162:  MOVWF  2F
+....................       enable_interrupts(INT_EXT_H2L);            // Enable external interrupt 
+0163:  BSF    0B.4
+0164:  BSF    03.5
+0165:  BCF    01.6
+....................        
+....................       if(nec_code==0x807F01FE) 
+0166:  BCF    03.5
+0167:  MOVF   33,W
+0168:  SUBLW  FE
+0169:  BTFSS  03.2
+016A:  GOTO   17A
+016B:  DECFSZ 34,W
+016C:  GOTO   17A
+016D:  MOVF   35,W
+016E:  SUBLW  7F
+016F:  BTFSS  03.2
+0170:  GOTO   17A
+0171:  MOVF   36,W
+0172:  SUBLW  80
+0173:  BTFSS  03.2
+0174:  GOTO   17A
+....................       { 
+....................       OUTPUT_toggle(PIN_C3); 
+0175:  BSF    03.5
+0176:  BCF    07.3
+0177:  MOVLW  08
+0178:  BCF    03.5
+0179:  XORWF  07,F
+....................       } 
+....................     } 
+017A:  GOTO   156
+....................   } 
+.................... } 
+017B:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3F84   INTRC_IO NOWDT PUT NOMCLR NOBROWNOUT NOPROTECT NOCPD

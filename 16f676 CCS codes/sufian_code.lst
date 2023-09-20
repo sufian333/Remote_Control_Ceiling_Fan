@@ -1,0 +1,1284 @@
+CCS PCM C Compiler, Version 5.015, 5967               09-Oct-20 00:15
+
+               Filename:   E:\Ahmad project\CCS\16f676 CCS codes\sufian_code.lst
+
+               ROM used:   823 words (80%)
+                           Largest free fragment is 201
+               RAM used:   26 (41%) at main() level
+                           29 (45%) worst case
+               Stack used: 6 locations (4 in main + 2 for interrupts)
+               Stack size: 8
+
+*
+0000:  MOVLW  02
+0001:  MOVWF  0A
+0002:  GOTO   040
+0003:  NOP
+0004:  BTFSC  03.5
+0005:  GOTO   00A
+0006:  MOVWF  24
+0007:  SWAPF  03,W
+0008:  MOVWF  25
+0009:  GOTO   00F
+000A:  BCF    03.5
+000B:  MOVWF  24
+000C:  SWAPF  03,W
+000D:  MOVWF  25
+000E:  BSF    25.1
+000F:  MOVF   0A,W
+0010:  MOVWF  2B
+0011:  CLRF   0A
+0012:  BCF    03.7
+0013:  SWAPF  24,F
+0014:  MOVF   04,W
+0015:  MOVWF  26
+0016:  MOVF   20,W
+0017:  MOVWF  27
+0018:  MOVF   21,W
+0019:  MOVWF  28
+001A:  MOVF   22,W
+001B:  MOVWF  29
+001C:  MOVF   23,W
+001D:  MOVWF  2A
+001E:  BCF    03.5
+001F:  BTFSS  0B.4
+0020:  GOTO   023
+0021:  BTFSC  0B.1
+0022:  GOTO   05C
+0023:  MOVLW  8C
+0024:  MOVWF  04
+0025:  BTFSS  00.0
+0026:  GOTO   029
+0027:  BTFSC  0C.0
+0028:  GOTO   139
+0029:  BTFSS  0B.5
+002A:  GOTO   02D
+002B:  BTFSC  0B.2
+002C:  GOTO   046
+002D:  MOVF   26,W
+002E:  MOVWF  04
+002F:  MOVF   27,W
+0030:  MOVWF  20
+0031:  MOVF   28,W
+0032:  MOVWF  21
+0033:  MOVF   29,W
+0034:  MOVWF  22
+0035:  MOVF   2A,W
+0036:  MOVWF  23
+0037:  MOVF   2B,W
+0038:  MOVWF  0A
+0039:  SWAPF  25,W
+003A:  MOVWF  03
+003B:  BCF    03.5
+003C:  SWAPF  24,W
+003D:  BTFSC  25.1
+003E:  BSF    03.5
+003F:  RETFIE
+0040:  CALL   3FF
+0041:  BSF    03.5
+0042:  MOVWF  10
+0043:  MOVLW  00
+0044:  MOVWF  0A
+0045:  GOTO   244
+.................... #include <16F676.h> 
+.................... //////////// Standard Header file for the PIC16F676 device //////////////// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... ////        (C) Copyright 1996, 2013 Custom Computer Services          //// 
+.................... //// This source code may only be used by licensed users of the CCS C  //// 
+.................... //// compiler.  This source code may only be distributed to other      //// 
+.................... //// licensed users of the CCS C compiler.  No other use, reproduction //// 
+.................... //// or distribution is permitted without written permission.          //// 
+.................... //// Derivative programs created using this software in object code    //// 
+.................... //// form are not restricted in any way.                               //// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... #device PIC16F676 
+*
+0130:  BSF    0A.0
+0131:  BCF    0A.1
+0132:  BCF    0A.2
+0133:  ADDWF  02,F
+0134:  GOTO   074
+0135:  GOTO   080
+0136:  GOTO   09E
+0137:  GOTO   0BE
+0138:  GOTO   0D9
+*
+032F:  BSF    0A.0
+0330:  BSF    0A.1
+0331:  BCF    0A.2
+0332:  ADDWF  02,F
+0333:  GOTO   25D
+0334:  GOTO   25F
+0335:  GOTO   261
+0336:  GOTO   263
+....................  
+.................... #list 
+....................  
+.................... #fuses HS 
+.................... #fuses PUT 
+.................... #fuses INTRC_IO 
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+.................... #FUSES NOMCLR                   //Master Clear pin used for I/O 
+.................... #FUSES NOBROWNOUT               //No brownout reset 
+.................... #use delay (clock=4Mhz) 
+*
+0171:  MOVLW  37
+0172:  MOVWF  04
+0173:  MOVF   00,W
+0174:  BTFSC  03.2
+0175:  GOTO   184
+0176:  MOVLW  01
+0177:  MOVWF  21
+0178:  CLRF   20
+0179:  DECFSZ 20,F
+017A:  GOTO   179
+017B:  DECFSZ 21,F
+017C:  GOTO   178
+017D:  MOVLW  4A
+017E:  MOVWF  20
+017F:  DECFSZ 20,F
+0180:  GOTO   17F
+0181:  GOTO   182
+0182:  DECFSZ 00,F
+0183:  GOTO   176
+....................  
+.................... #define button PIN_A4 
+.................... #define Grillbutton PIN_A1 
+....................   
+.................... #define ledH PIN_C5 
+.................... #define ledM PIN_C4 
+.................... #define ledL PIN_C3 
+.................... #define ledG PIN_A0 
+.................... #define time1 PIN_C2 
+.................... #define time2 PIN_C1 
+.................... #define time3 PIN_C0 
+.................... #define buz PIN_A5 
+.................... int1 H,M,L,G,t1,t2,t3,C; 
+.................... short nec_ok = 0; 
+.................... unsigned int8 nec_state = 0, i; 
+.................... unsigned int8 nec_code; 
+....................   int16 delays=0, count = 0; 
+.................... char value,check; 
+.................... void off(); 
+.................... void timeron(); 
+.................... void timeroff(); 
+....................  
+.................... //#INT_TIMER0 
+.................... //void Timer0_isr(void){ 
+....................  
+....................   //set_timer0(61);   
+....................  // clear_interrupt(INT_TIMER0); 
+....................  //  n++; 
+....................    //  if(delays==count) 
+....................     // { 
+....................       //      value=3; 
+....................         //    G=0; 
+....................              
+....................        // } 
+.................... //} 
+....................  
+.................... #INT_TIMER0 
+.................... void Timer0_isr(void){ 
+....................   set_timer0(60);   
+*
+0046:  MOVLW  3C
+0047:  MOVWF  01
+....................   clear_interrupt(INT_TIMER0); 
+0048:  BCF    0B.2
+....................   count++; 
+0049:  INCF   33,F
+004A:  BTFSC  03.2
+004B:  INCF   34,F
+....................   if(count == delays){   //  20 : 1000ms 
+004C:  MOVF   31,W
+004D:  SUBWF  33,W
+004E:  BTFSS  03.2
+004F:  GOTO   059
+0050:  MOVF   32,W
+0051:  SUBWF  34,W
+0052:  BTFSS  03.2
+0053:  GOTO   059
+....................     count = 0; 
+0054:  CLRF   34
+0055:  CLRF   33
+....................     value=3; 
+0056:  MOVLW  03
+0057:  MOVWF  35
+....................     G=0; 
+0058:  BCF    2C.3
+....................   } 
+.................... } 
+....................  
+0059:  BCF    0B.2
+005A:  BCF    0A.3
+005B:  GOTO   02D
+.................... #INT_EXT                                         // External interrupt 
+.................... void ext_isr(void){ 
+....................   unsigned int16 time; 
+....................   if(nec_state != 0){ 
+005C:  MOVF   2E,F
+005D:  BTFSC  03.2
+005E:  GOTO   06E
+....................     time = get_timer1();                         // Store Timer1 value 
+005F:  MOVF   0F,W
+0060:  MOVWF  23
+0061:  MOVF   0E,W
+0062:  MOVWF  20
+0063:  MOVF   0F,W
+0064:  SUBWF  23,W
+0065:  BTFSS  03.2
+0066:  GOTO   05F
+0067:  MOVF   20,W
+0068:  MOVWF  3A
+0069:  MOVF   23,W
+006A:  MOVWF  3B
+....................     set_timer1(0);                               // Reset Timer1 
+006B:  CLRF   0E
+006C:  CLRF   0F
+006D:  CLRF   0E
+....................   } 
+....................   switch(nec_state){ 
+006E:  MOVF   2E,W
+006F:  ADDLW  FB
+0070:  BTFSC  03.0
+0071:  GOTO   12B
+0072:  ADDLW  05
+0073:  GOTO   130
+....................     case 0 :                                     // Start receiving IR data (we're at the beginning of 9ms pulse) 
+....................       setup_timer_1( T1_INTERNAL | T1_DIV_BY_2 );   // Enable Timer1 module with internal clock source and prescaler = 2 
+0074:  MOVLW  15
+0075:  MOVWF  10
+....................       set_timer1(0);                             // Reset Timer1 value 
+0076:  CLRF   0E
+0077:  CLRF   0F
+0078:  CLRF   0E
+....................       nec_state = 1;                             // Next state: end of 9ms pulse (start of 4.5ms space) 
+0079:  MOVLW  01
+007A:  MOVWF  2E
+....................       i = 0; 
+007B:  CLRF   2F
+....................       ext_int_edge( L_TO_H );                    // Toggle external interrupt edge 
+007C:  BSF    03.5
+007D:  BSF    01.6
+....................       return; 
+007E:  GOTO   12C
+007F:  BCF    03.5
+....................     case 1 :                                     // End of 9ms pulse 
+....................       if((time > 4750) || (time < 4250)){        // Invalid interval ==> stop decoding and reset 
+0080:  MOVF   3B,W
+0081:  SUBLW  11
+0082:  BTFSC  03.0
+0083:  GOTO   08B
+0084:  XORLW  FF
+0085:  BTFSS  03.2
+0086:  GOTO   095
+0087:  MOVF   3A,W
+0088:  SUBLW  8E
+0089:  BTFSS  03.0
+008A:  GOTO   095
+008B:  MOVF   3B,W
+008C:  SUBLW  10
+008D:  BTFSS  03.0
+008E:  GOTO   098
+008F:  BTFSS  03.2
+0090:  GOTO   095
+0091:  MOVF   3A,W
+0092:  SUBLW  99
+0093:  BTFSS  03.0
+0094:  GOTO   098
+....................         nec_state = 0;                           // Reset decoding process 
+0095:  CLRF   2E
+....................         setup_timer_1(T1_DISABLED);              // Stop Timer1 module 
+0096:  CLRF   10
+....................       } 
+0097:  GOTO   09A
+....................       else 
+....................         nec_state = 2;                           // Next state: end of 4.5ms space (start of 562탎 pulse) 
+0098:  MOVLW  02
+0099:  MOVWF  2E
+....................       ext_int_edge( H_TO_L );                    // Toggle external interrupt edge 
+009A:  BSF    03.5
+009B:  BCF    01.6
+....................       return; 
+009C:  GOTO   12C
+009D:  BCF    03.5
+....................     case 2 :                                     // End of 4.5ms space 
+....................       if((time > 2500) || (time < 2000)){        // Invalid interval ==> stop decoding and reset 
+009E:  MOVF   3B,W
+009F:  SUBLW  08
+00A0:  BTFSC  03.0
+00A1:  GOTO   0A9
+00A2:  XORLW  FF
+00A3:  BTFSS  03.2
+00A4:  GOTO   0B3
+00A5:  MOVF   3A,W
+00A6:  SUBLW  C4
+00A7:  BTFSS  03.0
+00A8:  GOTO   0B3
+00A9:  MOVF   3B,W
+00AA:  SUBLW  07
+00AB:  BTFSS  03.0
+00AC:  GOTO   0B8
+00AD:  BTFSS  03.2
+00AE:  GOTO   0B3
+00AF:  MOVF   3A,W
+00B0:  SUBLW  CF
+00B1:  BTFSS  03.0
+00B2:  GOTO   0B8
+....................         nec_state = 0;                           // Reset decoding process 
+00B3:  CLRF   2E
+....................         setup_timer_1(T1_DISABLED);              // Stop Timer1 module 
+00B4:  CLRF   10
+....................         return; 
+00B5:  BSF    03.5
+00B6:  GOTO   12C
+00B7:  BCF    03.5
+....................       } 
+....................       nec_state = 3;                             // Next state: end of 562탎 pulse (start of 562탎 or 1687탎 space) 
+00B8:  MOVLW  03
+00B9:  MOVWF  2E
+....................       ext_int_edge( L_TO_H );                    // Toggle external interrupt edge 
+00BA:  BSF    03.5
+00BB:  BSF    01.6
+....................       return; 
+00BC:  GOTO   12C
+00BD:  BCF    03.5
+....................     case 3 :                                     // End of 562탎 pulse 
+....................       if((time > 350) || (time < 200)){          // Invalid interval ==> stop decoding and reset 
+00BE:  MOVF   3B,W
+00BF:  SUBLW  00
+00C0:  BTFSC  03.0
+00C1:  GOTO   0C9
+00C2:  XORLW  FF
+00C3:  BTFSS  03.2
+00C4:  GOTO   0D0
+00C5:  MOVF   3A,W
+00C6:  SUBLW  5E
+00C7:  BTFSS  03.0
+00C8:  GOTO   0D0
+00C9:  MOVF   3B,F
+00CA:  BTFSS  03.2
+00CB:  GOTO   0D3
+00CC:  MOVF   3A,W
+00CD:  SUBLW  C7
+00CE:  BTFSS  03.0
+00CF:  GOTO   0D3
+....................         nec_state = 0;                           // Reset decoding process 
+00D0:  CLRF   2E
+....................         setup_timer_1(T1_DISABLED);              // Disable Timer1 module 
+00D1:  CLRF   10
+....................       } 
+00D2:  GOTO   0D5
+....................       else 
+....................         nec_state = 4;                           // Next state: end of 562탎 or 1687탎 space 
+00D3:  MOVLW  04
+00D4:  MOVWF  2E
+....................       ext_int_edge( H_TO_L );                    // Toggle external interrupt edge 
+00D5:  BSF    03.5
+00D6:  BCF    01.6
+....................       return; 
+00D7:  GOTO   12C
+00D8:  BCF    03.5
+....................     case 4 :                                     // End of 562탎 or 1687탎 space 
+....................       if((time > 900) || (time < 200)){         // Invalid interval ==> stop decoding and reset 
+00D9:  MOVF   3B,W
+00DA:  SUBLW  02
+00DB:  BTFSC  03.0
+00DC:  GOTO   0E4
+00DD:  XORLW  FF
+00DE:  BTFSS  03.2
+00DF:  GOTO   0EB
+00E0:  MOVF   3A,W
+00E1:  SUBLW  84
+00E2:  BTFSS  03.0
+00E3:  GOTO   0EB
+00E4:  MOVF   3B,F
+00E5:  BTFSS  03.2
+00E6:  GOTO   0F0
+00E7:  MOVF   3A,W
+00E8:  SUBLW  C7
+00E9:  BTFSS  03.0
+00EA:  GOTO   0F0
+....................         nec_state = 0;                           // Reset decoding process 
+00EB:  CLRF   2E
+....................         setup_timer_1(T1_DISABLED);              // Disable Timer1 module 
+00EC:  CLRF   10
+....................         return; 
+00ED:  BSF    03.5
+00EE:  GOTO   12C
+00EF:  BCF    03.5
+....................       } 
+....................       if(i>23) 
+00F0:  MOVF   2F,W
+00F1:  SUBLW  17
+00F2:  BTFSC  03.0
+00F3:  GOTO   11F
+....................       { 
+....................       if( time > 500)                           // If space width > 1ms (short space) 
+00F4:  MOVF   3B,W
+00F5:  SUBLW  00
+00F6:  BTFSC  03.0
+00F7:  GOTO   10F
+00F8:  XORLW  FF
+00F9:  BTFSS  03.2
+00FA:  GOTO   0FF
+00FB:  MOVF   3A,W
+00FC:  SUBLW  F4
+00FD:  BTFSC  03.0
+00FE:  GOTO   10F
+....................         bit_set(nec_code, (31 - i));             // Write 1 to bit (31 - i) 
+00FF:  MOVF   2F,W
+0100:  SUBLW  1F
+0101:  MOVWF  3C
+0102:  MOVLW  01
+0103:  MOVWF  20
+0104:  MOVF   3C,W
+0105:  MOVWF  21
+0106:  BTFSC  03.2
+0107:  GOTO   10C
+0108:  BCF    03.0
+0109:  RLF    20,F
+010A:  DECFSZ 21,F
+010B:  GOTO   108
+010C:  MOVF   20,W
+010D:  IORWF  30,F
+010E:  GOTO   11F
+....................       else                                       // If space width < 1ms (long space) 
+....................         bit_clear(nec_code, (31 - i));// Write 0 to bit (31 - i) 
+010F:  MOVF   2F,W
+0110:  SUBLW  1F
+0111:  MOVWF  3C
+0112:  MOVLW  01
+0113:  MOVWF  20
+0114:  MOVF   3C,W
+0115:  MOVWF  21
+0116:  BTFSC  03.2
+0117:  GOTO   11C
+0118:  BCF    03.0
+0119:  RLF    20,F
+011A:  DECFSZ 21,F
+011B:  GOTO   118
+011C:  MOVF   20,W
+011D:  XORLW  FF
+011E:  ANDWF  30,F
+....................       } 
+....................       i++; 
+011F:  INCF   2F,F
+....................       if(i > 31){                                // If all bits are received 
+0120:  MOVF   2F,W
+0121:  SUBLW  1F
+0122:  BTFSC  03.0
+0123:  GOTO   126
+....................         nec_ok = 1;                              // Decoding process OK 
+0124:  BSF    2D.0
+....................         disable_interrupts(INT_EXT);             // Disable the external interrupt 
+0125:  BCF    0B.4
+....................       } 
+....................       nec_state = 3;                             // Next state: end of 562탎 pulse (start of 562탎 or 1687탎 space) 
+0126:  MOVLW  03
+0127:  MOVWF  2E
+....................       ext_int_edge( L_TO_H );                    // Toggle external interrupt edge 
+0128:  BSF    03.5
+0129:  BSF    01.6
+012A:  BCF    03.5
+012B:  BSF    03.5
+....................   } 
+.................... } 
+012C:  BCF    03.5
+012D:  BCF    0B.1
+012E:  BCF    0A.3
+012F:  GOTO   02D
+.................... #INT_TIMER1                                      // Timer1 interrupt (used for time out) 
+.................... void timer1_isr(void){ 
+....................   nec_state = 0;                                 // Reset decoding process 
+*
+0139:  CLRF   2E
+....................   ext_int_edge( H_TO_L );                        // External interrupt edge from high to low 
+013A:  BSF    03.5
+013B:  BCF    01.6
+....................   setup_timer_1(T1_DISABLED);                    // Disable Timer1 module 
+013C:  BCF    03.5
+013D:  CLRF   10
+....................   clear_interrupt(INT_TIMER1);                   // Clear Timer1 interrupt flag bit 
+013E:  BCF    0C.0
+013F:  BCF    0C.0
+0140:  BCF    0A.3
+0141:  GOTO   02D
+.................... } 
+....................  
+.................... void write() 
+.................... { 
+....................     write_eeprom(0x01,value); 
+*
+0209:  MOVF   0B,W
+020A:  MOVWF  20
+020B:  BCF    0B.7
+020C:  MOVLW  01
+020D:  BSF    03.5
+020E:  MOVWF  1B
+020F:  BCF    03.5
+0210:  MOVF   35,W
+0211:  BSF    03.5
+0212:  MOVWF  1A
+0213:  BCF    1C.7
+0214:  BSF    1C.2
+0215:  MOVLW  55
+0216:  MOVWF  1D
+0217:  MOVLW  AA
+0218:  MOVWF  1D
+0219:  BSF    1C.1
+021A:  BTFSC  1C.1
+021B:  GOTO   21A
+021C:  BCF    1C.2
+021D:  BCF    03.5
+021E:  MOVF   20,W
+021F:  IORWF  0B,F
+....................      
+....................      write_eeprom(0x02,G); 
+0220:  MOVLW  00
+0221:  BTFSC  2C.3
+0222:  MOVLW  01
+0223:  MOVWF  37
+0224:  MOVF   0B,W
+0225:  MOVWF  20
+0226:  BCF    0B.7
+0227:  MOVLW  02
+0228:  BSF    03.5
+0229:  MOVWF  1B
+022A:  BCF    03.5
+022B:  MOVF   37,W
+022C:  BSF    03.5
+022D:  MOVWF  1A
+022E:  BCF    1C.7
+022F:  BSF    1C.2
+0230:  MOVLW  55
+0231:  MOVWF  1D
+0232:  MOVLW  AA
+0233:  MOVWF  1D
+0234:  BSF    1C.1
+0235:  BTFSC  1C.1
+0236:  GOTO   235
+0237:  BCF    1C.2
+0238:  BCF    03.5
+0239:  MOVF   20,W
+023A:  IORWF  0B,F
+023B:  GOTO   289 (RETURN)
+....................      
+.................... } 
+.................... void buzz() 
+.................... { 
+....................        output_bit(buz,1); 
+*
+016B:  BSF    05.5
+016C:  BSF    03.5
+016D:  BCF    05.5
+....................        delay_ms(100); 
+016E:  MOVLW  64
+016F:  BCF    03.5
+0170:  MOVWF  37
+....................        output_bit(buz,0); 
+*
+0184:  BCF    05.5
+0185:  BSF    03.5
+0186:  BCF    05.5
+0187:  BCF    03.5
+0188:  RETURN
+.................... } 
+.................... void output(){ 
+.................... output_bit(ledH,H); 
+*
+01C0:  BTFSC  2C.0
+01C1:  GOTO   1C4
+01C2:  BCF    07.5
+01C3:  GOTO   1C5
+01C4:  BSF    07.5
+01C5:  BSF    03.5
+01C6:  BCF    07.5
+....................      
+....................     output_bit(ledM,M); 
+01C7:  BCF    03.5
+01C8:  BTFSC  2C.1
+01C9:  GOTO   1CC
+01CA:  BCF    07.4
+01CB:  GOTO   1CD
+01CC:  BSF    07.4
+01CD:  BSF    03.5
+01CE:  BCF    07.4
+....................      
+....................     output_bit(ledL,L); 
+01CF:  BCF    03.5
+01D0:  BTFSC  2C.2
+01D1:  GOTO   1D4
+01D2:  BCF    07.3
+01D3:  GOTO   1D5
+01D4:  BSF    07.3
+01D5:  BSF    03.5
+01D6:  BCF    07.3
+....................      
+....................     output_bit(ledG,G); 
+01D7:  BCF    03.5
+01D8:  BTFSC  2C.3
+01D9:  GOTO   1DC
+01DA:  BCF    05.0
+01DB:  GOTO   1DD
+01DC:  BSF    05.0
+01DD:  BSF    03.5
+01DE:  BCF    05.0
+01DF:  BCF    03.5
+01E0:  GOTO   265 (RETURN)
+....................      
+....................      
+.................... } 
+.................... void sbut() 
+.................... { 
+....................         if(H==0 && M==0 && L==0) 
+01E1:  BTFSC  2C.0
+01E2:  GOTO   1E7
+01E3:  BTFSC  2C.1
+01E4:  GOTO   1E7
+01E5:  BTFSS  2C.2
+....................             { 
+....................                 value=0; 
+01E6:  CLRF   35
+....................              
+....................             } 
+....................         if(H==1 && M==0 && L==0) 
+01E7:  BTFSS  2C.0
+01E8:  GOTO   1EF
+01E9:  BTFSC  2C.1
+01EA:  GOTO   1EF
+01EB:  BTFSC  2C.2
+01EC:  GOTO   1EF
+....................             { 
+....................              
+....................                 value=1; 
+01ED:  MOVLW  01
+01EE:  MOVWF  35
+....................              
+....................             } 
+....................         if(H==0 && M==1 && L==0) 
+01EF:  BTFSC  2C.0
+01F0:  GOTO   1F7
+01F1:  BTFSS  2C.1
+01F2:  GOTO   1F7
+01F3:  BTFSC  2C.2
+01F4:  GOTO   1F7
+....................             { 
+....................              
+....................                 value=2; 
+01F5:  MOVLW  02
+01F6:  MOVWF  35
+....................                  
+....................             } 
+....................         if(H==0 && M==0 && L==1) 
+01F7:  BTFSC  2C.0
+01F8:  GOTO   1FF
+01F9:  BTFSC  2C.1
+01FA:  GOTO   1FF
+01FB:  BTFSS  2C.2
+01FC:  GOTO   1FF
+....................             { 
+....................                 value=3;           
+01FD:  MOVLW  03
+01FE:  MOVWF  35
+....................             } 
+01FF:  GOTO   270 (RETURN)
+.................... } 
+.................... void Gbut() 
+.................... {    
+....................     if(H==0 && M==0 && L==0) 
+0200:  BTFSC  2C.0
+0201:  GOTO   206
+0202:  BTFSC  2C.1
+0203:  GOTO   206
+0204:  BTFSS  2C.2
+....................    { 
+....................        G=G; 
+....................    } 
+0205:  GOTO   208
+....................    else 
+....................    { 
+....................     G=~G; 
+0206:  MOVLW  08
+0207:  XORWF  2C,F
+....................    }  
+0208:  GOTO   27B (RETURN)
+.................... } 
+....................  
+.................... void off() 
+.................... {    
+....................      
+....................     H=0; 
+*
+0161:  BCF    2C.0
+....................     M=0; 
+0162:  BCF    2C.1
+....................     L=0; 
+0163:  BCF    2C.2
+....................     G=0; 
+0164:  BCF    2C.3
+....................     timeroff(); 
+0165:  CALL   15B
+....................       output_bit(buz,0); 
+0166:  BCF    05.5
+0167:  BSF    03.5
+0168:  BCF    05.5
+0169:  BCF    03.5
+016A:  RETURN
+.................... } 
+....................  
+.................... void high() 
+.................... { 
+....................      
+....................     H=1; 
+*
+01B4:  BSF    2C.0
+....................     M=0; 
+01B5:  BCF    2C.1
+....................     L=0; 
+01B6:  BCF    2C.2
+01B7:  GOTO   264 (RETURN)
+....................   
+....................  } 
+.................... void med() 
+.................... { 
+....................     H=0; 
+01B8:  BCF    2C.0
+....................     M=1; 
+01B9:  BSF    2C.1
+....................     L=0; 
+01BA:  BCF    2C.2
+01BB:  GOTO   264 (RETURN)
+....................  
+.................... } 
+.................... void low() 
+.................... { 
+....................      
+....................     H=0; 
+01BC:  BCF    2C.0
+....................     M=0; 
+01BD:  BCF    2C.1
+....................     L=1; 
+01BE:  BSF    2C.2
+01BF:  GOTO   264 (RETURN)
+.................... } 
+.................... void times() 
+.................... { 
+.................... output_bit(time1,t1); 
+*
+0142:  BTFSC  2C.4
+0143:  GOTO   146
+0144:  BCF    07.2
+0145:  GOTO   147
+0146:  BSF    07.2
+0147:  BSF    03.5
+0148:  BCF    07.2
+....................  output_bit(time2,t2);    
+0149:  BCF    03.5
+014A:  BTFSC  2C.5
+014B:  GOTO   14E
+014C:  BCF    07.1
+014D:  GOTO   14F
+014E:  BSF    07.1
+014F:  BSF    03.5
+0150:  BCF    07.1
+.................... output_bit(time3,t3); 
+0151:  BCF    03.5
+0152:  BTFSC  2C.6
+0153:  GOTO   156
+0154:  BCF    07.0
+0155:  GOTO   157
+0156:  BSF    07.0
+0157:  BSF    03.5
+0158:  BCF    07.0
+0159:  BCF    03.5
+015A:  RETURN
+....................     
+.................... } 
+.................... void timeron() 
+.................... { 
+....................     //OPTION_REG = 0x07; 
+....................      set_timer0(60);  
+*
+023C:  MOVLW  3C
+023D:  MOVWF  01
+....................     enable_interrupts(INT_TIMER0); 
+023E:  BSF    0B.5
+....................      clear_interrupt(INT_TIMER0);   
+023F:  BCF    0B.2
+....................     count=0; 
+0240:  CLRF   34
+0241:  CLRF   33
+....................     times(); 
+0242:  CALL   142
+0243:  RETURN
+.................... } 
+.................... void timeroff() 
+.................... {   
+....................    disable_interrupts(INT_TIMER0);    
+*
+015B:  BCF    0B.5
+....................     t1=0; 
+015C:  BCF    2C.4
+....................     t2=0; 
+015D:  BCF    2C.5
+....................     t3=0; 
+015E:  BCF    2C.6
+....................     times(); 
+015F:  CALL   142
+0160:  RETURN
+.................... } 
+....................  
+.................... void Init() 
+.................... { 
+....................    enable_interrupts(GLOBAL); 
+*
+0189:  MOVLW  C0
+018A:  IORWF  0B,F
+....................    enable_interrupts(INT_EXT_H2L);                // Enable external interrupt 
+018B:  BSF    0B.4
+018C:  BSF    03.5
+018D:  BCF    01.6
+....................    clear_interrupt(INT_TIMER1);      // clear Timer1 overflow interrupt flag bit 
+018E:  BCF    03.5
+018F:  BCF    0C.0
+....................   enable_interrupts(INT_TIMER1);     // enable Timer1 overflow interrupt 
+0190:  BSF    03.5
+0191:  BSF    0C.0
+....................   setup_timer_0(T0_INTERNAL | T0_DIV_256);   
+0192:  MOVF   01,W
+0193:  ANDLW  C0
+0194:  IORLW  07
+0195:  MOVWF  01
+....................   nec_ok = 0; 
+0196:  BCF    03.5
+0197:  BCF    2D.0
+....................   nec_state = 0;  
+0198:  CLRF   2E
+....................   off(); 
+0199:  CALL   161
+....................   value=read_eeprom(0x01); 
+019A:  MOVLW  01
+019B:  BSF    03.5
+019C:  MOVWF  1B
+019D:  BCF    1C.7
+019E:  BSF    1C.0
+019F:  MOVF   1A,W
+01A0:  BCF    03.5
+01A1:  MOVWF  35
+....................       G=read_eeprom(0x02); 
+01A2:  MOVLW  02
+01A3:  BSF    03.5
+01A4:  MOVWF  1B
+01A5:  BCF    1C.7
+01A6:  BSF    1C.0
+01A7:  MOVF   1A,W
+01A8:  BCF    03.5
+01A9:  MOVWF  21
+01AA:  BCF    2C.3
+01AB:  BTFSC  21.0
+01AC:  BSF    2C.3
+....................       check=value; 
+01AD:  MOVF   35,W
+01AE:  MOVWF  36
+....................       C=G; 
+01AF:  BCF    2C.7
+01B0:  BTFSC  2C.3
+01B1:  BSF    2C.7
+....................       buzz(); 
+01B2:  CALL   16B
+01B3:  GOTO   255 (RETURN)
+.................... } 
+....................  
+....................  
+.................... void main(){ 
+*
+0244:  MOVF   03,W
+0245:  ANDLW  1F
+0246:  MOVWF  03
+0247:  BCF    2D.0
+0248:  CLRF   2E
+0249:  CLRF   32
+024A:  CLRF   31
+024B:  CLRF   34
+024C:  CLRF   33
+024D:  BCF    1F.6
+024E:  MOVLW  00
+024F:  BSF    03.5
+0250:  MOVWF  11
+0251:  MOVLW  07
+0252:  BCF    03.5
+0253:  MOVWF  19
+.................... Init(); 
+0254:  GOTO   189
+....................    
+....................   while(TRUE){   
+....................    
+....................     while(!nec_ok)               // If the mcu successfully receives NEC protocol message 
+0255:  BTFSC  2D.0
+0256:  GOTO   28F
+....................     {                                   
+....................     switch(value){ 
+0257:  MOVF   35,W
+0258:  ADDLW  FC
+0259:  BTFSC  03.0
+025A:  GOTO   264
+025B:  ADDLW  04
+025C:  GOTO   32F
+....................         case 0: 
+....................             high(); 
+025D:  GOTO   1B4
+....................             break; 
+025E:  GOTO   264
+....................         case 1: 
+....................             med(); 
+025F:  GOTO   1B8
+....................             break; 
+0260:  GOTO   264
+....................         case 2: 
+....................             low(); 
+0261:  GOTO   1BC
+....................             break; 
+0262:  GOTO   264
+....................         case 3: 
+....................             off(); 
+0263:  CALL   161
+....................             break; 
+....................     } 
+....................       output(); 
+0264:  GOTO   1C0
+....................        
+....................          if(input(button) == 0) 
+0265:  BSF    03.5
+0266:  BSF    05.4
+0267:  BCF    03.5
+0268:  BTFSC  05.4
+0269:  GOTO   270
+....................     { 
+....................         while(input(button)==0) 
+026A:  BSF    03.5
+026B:  BSF    05.4
+026C:  BCF    03.5
+026D:  BTFSS  05.4
+....................         { 
+026E:  GOTO   26A
+....................              
+....................         }    
+....................         sbut(); 
+026F:  GOTO   1E1
+....................     } 
+....................        if(input(Grillbutton)==0) 
+0270:  BSF    03.5
+0271:  BSF    05.1
+0272:  BCF    03.5
+0273:  BTFSC  05.1
+0274:  GOTO   27B
+....................     { 
+....................         while(input(Grillbutton)==0) 
+0275:  BSF    03.5
+0276:  BSF    05.1
+0277:  BCF    03.5
+0278:  BTFSS  05.1
+....................         { 
+0279:  GOTO   275
+....................              
+....................         }    
+....................         Gbut(); 
+027A:  GOTO   200
+....................     
+....................     } 
+....................       if(check!=value || C!=G) 
+027B:  MOVF   35,W
+027C:  SUBWF  36,W
+027D:  BTFSS  03.2
+027E:  GOTO   287
+027F:  CLRF   20
+0280:  BTFSC  2C.3
+0281:  BSF    20.7
+0282:  MOVF   2C,W
+0283:  XORWF  20,W
+0284:  ANDLW  80
+0285:  BTFSC  03.2
+0286:  GOTO   28E
+....................           { 
+....................           buzz(); 
+0287:  CALL   16B
+....................               write(); 
+0288:  GOTO   209
+....................               check=value; 
+0289:  MOVF   35,W
+028A:  MOVWF  36
+....................               C=G; 
+028B:  BCF    2C.7
+028C:  BTFSC  2C.3
+028D:  BSF    2C.7
+....................           } 
+028E:  GOTO   255
+....................        
+....................     } 
+....................      
+....................     nec_ok = 0;                                // Reset decoding process 
+028F:  BCF    2D.0
+....................       nec_state = 0; 
+0290:  CLRF   2E
+....................       setup_timer_1(T1_DISABLED);                // Disable Timer1 module 
+0291:  CLRF   10
+....................        
+....................       enable_interrupts(INT_EXT_H2L);            // Enable external interrupt 
+0292:  BSF    0B.4
+0293:  BSF    03.5
+0294:  BCF    01.6
+....................        
+....................       switch (nec_code) { 
+0295:  BCF    03.5
+0296:  MOVF   30,W
+0297:  XORLW  FE
+0298:  BTFSC  03.2
+0299:  GOTO   2A7
+029A:  XORLW  04
+029B:  BTFSC  03.2
+029C:  GOTO   2C6
+029D:  XORLW  1E
+029E:  BTFSC  03.2
+029F:  GOTO   2CF
+02A0:  XORLW  18
+02A1:  BTFSC  03.2
+02A2:  GOTO   309
+02A3:  XORLW  04
+02A4:  BTFSC  03.2
+02A5:  GOTO   32A
+02A6:  GOTO   32D
+....................         case 0xFE:            //HIGH button 
+....................             if(H==1 && M==0 && L==0){break;} 
+02A7:  BTFSS  2C.0
+02A8:  GOTO   2AD
+02A9:  BTFSC  2C.1
+02AA:  GOTO   2AD
+02AB:  BTFSS  2C.2
+02AC:  GOTO   32D
+....................  
+....................             if(H==0 && M==0 && L==0) 
+02AD:  BTFSC  2C.0
+02AE:  GOTO   2B5
+02AF:  BTFSC  2C.1
+02B0:  GOTO   2B5
+02B1:  BTFSC  2C.2
+02B2:  GOTO   2B5
+....................             { 
+....................                 value=0; 
+02B3:  CLRF   35
+....................             } 
+02B4:  GOTO   2C5
+....................             else if(H==0 && M==1 && L==0) 
+02B5:  BTFSC  2C.0
+02B6:  GOTO   2BD
+02B7:  BTFSS  2C.1
+02B8:  GOTO   2BD
+02B9:  BTFSC  2C.2
+02BA:  GOTO   2BD
+....................             { 
+....................                 value=0; 
+02BB:  CLRF   35
+....................  
+....................             } 
+02BC:  GOTO   2C5
+....................             else if(H==0 && M==0 && L==1) 
+02BD:  BTFSC  2C.0
+02BE:  GOTO   2C5
+02BF:  BTFSC  2C.1
+02C0:  GOTO   2C5
+02C1:  BTFSS  2C.2
+02C2:  GOTO   2C5
+....................             { 
+....................                 value=1; 
+02C3:  MOVLW  01
+02C4:  MOVWF  35
+....................  
+....................             } 
+....................              
+....................             break; 
+02C5:  GOTO   32D
+....................         case 0xFA:            //GRILL button 
+....................         if(H==0 && M==0 && L==0) 
+02C6:  BTFSC  2C.0
+02C7:  GOTO   2CC
+02C8:  BTFSC  2C.1
+02C9:  GOTO   2CC
+02CA:  BTFSS  2C.2
+....................         { 
+....................             break; 
+02CB:  GOTO   32D
+....................         } 
+....................         G=~G; 
+02CC:  MOVLW  08
+02CD:  XORWF  2C,F
+....................          
+....................         break; 
+02CE:  GOTO   32D
+....................          
+....................         case 0xE4:            //TIMER button 
+....................             if(H==0 && M==0 && L==0){break;} 
+02CF:  BTFSC  2C.0
+02D0:  GOTO   2D5
+02D1:  BTFSC  2C.1
+02D2:  GOTO   2D5
+02D3:  BTFSS  2C.2
+02D4:  GOTO   32D
+....................  
+....................         if(t1==0 && t2==0 && t3==0) 
+02D5:  BTFSC  2C.4
+02D6:  GOTO   2E3
+02D7:  BTFSC  2C.5
+02D8:  GOTO   2E3
+02D9:  BTFSC  2C.6
+02DA:  GOTO   2E3
+....................         { 
+....................              
+....................             delays=200;  
+02DB:  CLRF   32
+02DC:  MOVLW  C8
+02DD:  MOVWF  31
+....................             t1=1; 
+02DE:  BSF    2C.4
+....................             t2=0; 
+02DF:  BCF    2C.5
+....................             t3=0; 
+02E0:  BCF    2C.6
+....................             timeron(); 
+02E1:  CALL   23C
+....................         } 
+02E2:  GOTO   307
+....................         else if(t1==1 && t2==0 && t3==0) 
+02E3:  BTFSS  2C.4
+02E4:  GOTO   2F2
+02E5:  BTFSC  2C.5
+02E6:  GOTO   2F2
+02E7:  BTFSC  2C.6
+02E8:  GOTO   2F2
+....................         { 
+....................             delays=400; 
+02E9:  MOVLW  01
+02EA:  MOVWF  32
+02EB:  MOVLW  90
+02EC:  MOVWF  31
+....................             t1=0; 
+02ED:  BCF    2C.4
+....................             t2=1; 
+02EE:  BSF    2C.5
+....................             t3=0; 
+02EF:  BCF    2C.6
+....................             timeron(); 
+02F0:  CALL   23C
+....................         } 
+02F1:  GOTO   307
+....................         else if(t1==0 && t2==1 && t3==0) 
+02F2:  BTFSC  2C.4
+02F3:  GOTO   301
+02F4:  BTFSS  2C.5
+02F5:  GOTO   301
+02F6:  BTFSC  2C.6
+02F7:  GOTO   301
+....................         { 
+....................             delays=600;  
+02F8:  MOVLW  02
+02F9:  MOVWF  32
+02FA:  MOVLW  58
+02FB:  MOVWF  31
+....................             t1=0; 
+02FC:  BCF    2C.4
+....................             t2=0; 
+02FD:  BCF    2C.5
+....................             t3=1; 
+02FE:  BSF    2C.6
+....................             timeron(); 
+02FF:  CALL   23C
+....................         } 
+0300:  GOTO   307
+....................         else if(t1==0 && t2==0 && t3==1) 
+0301:  BTFSC  2C.4
+0302:  GOTO   307
+0303:  BTFSC  2C.5
+0304:  GOTO   307
+0305:  BTFSC  2C.6
+....................         { 
+....................             timeroff(); 
+0306:  CALL   15B
+....................         } 
+....................             buzz(); 
+0307:  CALL   16B
+....................         break; 
+0308:  GOTO   32D
+....................          
+....................         case 0xFC:            //LOW button 
+....................             if(H==0 && M==0 && L==1){break;} 
+0309:  BTFSC  2C.0
+030A:  GOTO   30F
+030B:  BTFSC  2C.1
+030C:  GOTO   30F
+030D:  BTFSC  2C.2
+030E:  GOTO   32D
+....................  
+....................              if(H==0 && M==0 && L==0) 
+030F:  BTFSC  2C.0
+0310:  GOTO   318
+0311:  BTFSC  2C.1
+0312:  GOTO   318
+0313:  BTFSC  2C.2
+0314:  GOTO   318
+....................             { 
+....................                 value=2; 
+0315:  MOVLW  02
+0316:  MOVWF  35
+....................  
+....................             } 
+0317:  GOTO   329
+....................             else if(H==0 && M==1 && L==0) 
+0318:  BTFSC  2C.0
+0319:  GOTO   321
+031A:  BTFSS  2C.1
+031B:  GOTO   321
+031C:  BTFSC  2C.2
+031D:  GOTO   321
+....................             { 
+....................                 value=2; 
+031E:  MOVLW  02
+031F:  MOVWF  35
+....................  
+....................             } 
+0320:  GOTO   329
+....................             else if(H==1 && M==0 && L==0) 
+0321:  BTFSS  2C.0
+0322:  GOTO   329
+0323:  BTFSC  2C.1
+0324:  GOTO   329
+0325:  BTFSC  2C.2
+0326:  GOTO   329
+....................             { 
+....................                 value=1; 
+0327:  MOVLW  01
+0328:  MOVWF  35
+....................  
+....................             } 
+....................              
+....................             break; 
+0329:  GOTO   32D
+....................         case 0xF8:            //OFF button 
+....................             value=3; 
+032A:  MOVLW  03
+032B:  MOVWF  35
+....................             G=0; 
+032C:  BCF    2C.3
+....................              
+....................              
+....................         break; 
+....................       } 
+032D:  GOTO   255
+....................           
+....................    
+....................      
+....................   } 
+.................... } 
+032E:  SLEEP
+
+Configuration Fuses:
+   Word  1: 3F84   INTRC_IO NOWDT PUT NOMCLR NOBROWNOUT NOPROTECT NOCPD

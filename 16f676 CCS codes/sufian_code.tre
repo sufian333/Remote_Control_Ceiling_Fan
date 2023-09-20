@@ -1,0 +1,35 @@
+ÀÄsufian_code
+   ÃÄMAIN  0/235  Ram=3
+   ³  ÃÄ@cinit1  (Inline)  Ram=0
+   ³  ÃÄInit  0/43  Ram=0
+   ³  ³  ÃÄoff  0/10  Ram=0
+   ³  ³  ³  ÀÄtimeroff  0/6  Ram=0
+   ³  ³  ³     ÀÄtimes  0/25  Ram=0
+   ³  ³  ÀÄbuzz  0/30  Ram=0
+   ³  ³     ÀÄ@delay_ms1  (Inline)  Ram=1
+   ³  ÃÄ@goto10710  0/8  Ram=0
+   ³  ÃÄhigh  0/4  Ram=0
+   ³  ÃÄmed  0/4  Ram=0
+   ³  ÃÄlow  0/4  Ram=0
+   ³  ÃÄoff  0/10  Ram=0
+   ³  ³  ÀÄ*
+   ³  ÃÄoutput  0/33  Ram=0
+   ³  ÃÄsbut  0/31  Ram=3
+   ³  ÃÄGbut  0/9  Ram=3
+   ³  ÃÄbuzz  0/30  Ram=0
+   ³  ³  ÀÄ*
+   ³  ÃÄwrite  0/51  Ram=1
+   ³  ÃÄtimeron  0/8  Ram=0
+   ³  ³  ÀÄtimes  0/25  Ram=0
+   ³  ÃÄtimeron  0/8  Ram=0
+   ³  ³  ÀÄ*
+   ³  ÃÄtimeron  0/8  Ram=0
+   ³  ³  ÀÄ*
+   ³  ÃÄtimeroff  0/6  Ram=0
+   ³  ³  ÀÄ*
+   ³  ÀÄbuzz  0/30  Ram=0
+   ³     ÀÄ*
+   ÃÄTimer0_isr  0/22  Ram=0
+   ÃÄext_isr  0/212  Ram=3
+   ³  ÀÄ@goto10522  0/9  Ram=0
+   ÀÄtimer1_isr  0/9  Ram=0

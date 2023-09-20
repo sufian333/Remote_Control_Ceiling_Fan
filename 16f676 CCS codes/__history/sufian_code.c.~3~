@@ -1,0 +1,471 @@
+#include <16F676.h>
+#fuses HS
+#fuses PUT
+#fuses INTRC_IO
+#FUSES NOWDT                    //No Watch Dog Timer
+#FUSES NOMCLR                   //Master Clear pin used for I/O
+#FUSES NOBROWNOUT               //No brownout reset
+#use delay (clock=4Mhz)
+
+
+__bit H,M,L,G,t1,t2,t3,C;
+uint8_t nec_state, bit_n, nec_code;
+  uint16_t timer_value; 
+  int delays=0, count = 0;
+  __bit nec_ok;
+#define button PIN_A4
+#define Grillbutton PIN_A1
+ 
+#define ledH PIN_C5
+#define ledM PIN_C4
+#define ledL PIN_C3
+#define ledG PIN_A0
+#define time1 PIN_C2
+#define time2 PIN_C1
+#define time3 PIN_C0
+#define buz PIN_A5
+char value,check;
+void off();
+void timeron();
+void timeroff();
+
+
+void write()
+{
+    EEPROM_WRITE(0x01,value);
+        while(WR)
+        {
+            
+        }
+    
+     EEPROM_WRITE(0x02,G);
+        while(WR)
+        {
+            
+        }
+    
+}
+
+void timer()
+{
+    TMR0 = 60;     //Load the timer Value, (Note: Timervalue is 101 instaed of 100 as the
+         T0IF=0;
+         // Clear timer interrupt flag
+        count++;
+        if(delays==count)
+        {
+            value=3;
+            G=0;
+            
+        }
+        
+}
+
+void ext_isr(void){
+{
+/* start external interrupt ISR */
+ 
+    if(T0IF==1)
+    {
+     timer();  //timer function calling
+    } 
+  
+  if (RAIF && (RA2 || !RA2))   // PORTB change ISR (& clear mismatch condition)
+  {
+      
+    RAIF = 0;   // clear PORTB interrupt flag bit
+    if(nec_state != 0)
+    {
+        
+      timer_value = (TMR1H << 8) | TMR1L;  // store Timer1 value
+      TMR1H = TMR1L = 0;     // reset Timer1
+    }
+ 
+    switch(nec_state)
+    {
+     case 0 :              // start receiving IR data (we're at the beginning of 9ms pulse)
+       TMR1H = TMR1L = 0;  // reset Timer1
+       TMR1ON = 1;         // enable Timer1
+       nec_state = 1;      // next state: end of 9ms pulse (start of 4.5ms space)
+       bit_n = 0;
+       break;
+ 
+     case 1 :                                       // End of 9ms pulse
+       if((timer_value > 4750) || (timer_value < 4250))
+       { // invalid interval ==> stop decoding and reset
+         nec_state = 0;  // reset decoding process
+         TMR1ON = 0;     // disable Timer1
+       }
+       else
+         nec_state = 2;  // next state: end of 4.5ms space (start of 562탎 pulse)
+       break;
+ 
+     case 2 :                                       // End of 4.5ms space
+       if((timer_value > 2500) || (timer_value < 2000))
+       { // invalid interval ==> stop decoding and reset
+         nec_state = 0;  // reset decoding process
+         TMR1ON = 0;     // disable Timer1
+       }
+       else
+         nec_state = 3; // next state: end of 562탎 pulse (start of 562탎 or 1687탎 space)
+       break;
+ 
+     case 3 :    // End of 562탎 pulse
+       if((timer_value > 350) || (timer_value < 200))
+       { // invalid interval ==> stop decoding and reset
+         TMR1ON = 0;     // disable Timer1
+         nec_state = 0;  // reset decoding process
+       }
+       else
+         nec_state = 4;  // next state: end of 562탎 or 1687탎 space
+       break;
+ 
+       case 4 :
+       if((timer_value > 900) || (timer_value < 200))
+       { // invalid interval ==> stop decoding and reset
+         TMR1ON = 0;     // disable Timer1
+         nec_state = 0;  // reset decoding process
+       }
+ 
+       else
+       {
+           // if space width > 1ms (short space)
+             if(bit_n>23)
+             {
+               if( timer_value > 500)
+                   nec_code |=   (uint8_t)1 << (31 - bit_n);   // write 1 to bit (31 - bit_n)
+ 
+               else    // if space width < 1ms (long space)
+                   nec_code &= ~((uint8_t)1 << (31 - bit_n));  // write 0 to bit (31 - bit_n)
+             }
+           
+         bit_n++;
+ 
+         if(bit_n > 31)
+         {
+           nec_ok = 1;   // decoding process OK
+           RAIE = 0;     // disable PORTB change interrupt 
+         }
+ 
+         else
+           nec_state = 3;  // next state: end of 562탎 pulse (start of 562탎 or 1687탎 space)
+         
+         break;
+       }  // end " else "
+       
+    }  // end " switch(nec_state) "
+
+  }  // end " if (RBIF && (RB0 || !RB0)) "
+/* end external interrupt ISR */
+ 
+/* start Timer1 ISR */
+  if (TMR1IF)         // Timer1 ISR
+  {
+    TMR1IF    = 0;   // clear Timer1 overflow flag bit
+    nec_state = 0;   // reset decoding process
+    TMR1ON    = 0;   // disable Timer1
+  }
+/* end Timer1 ISR */
+ 
+}
+
+
+void buzz()
+{
+              buz=1;
+          __delay_ms(100);
+          buz=0;
+}
+void output(){
+    ledH = H;
+    ledM = M;
+    ledL = L;
+    ledG=G;
+    
+}
+void sbut()
+{
+        if(H==0 && M==0 && L==0)
+            {
+                value=0;
+            
+            }
+        if(H==1 && M==0 && L==0)
+            {
+            
+                value=1;
+            
+            }
+        if(H==0 && M==1 && L==0)
+            {
+            
+                value=2;
+                
+            }
+        if(H==0 && M==0 && L==1)
+            {
+                value=3;          
+            }
+}
+void Gbut()
+{   
+    if(H==0 && M==0 && L==0)
+   {
+       G=G;
+   }
+   else
+   {
+    G=~G;
+   } 
+}
+
+void off()
+{   
+    
+    H=0;
+    M=0;
+    L=0;
+    G=0;
+    timeroff();
+    buz=0;
+}
+
+void high()
+{
+    
+    H=1;
+    M=0;
+    L=0;
+ 
+ }
+void med()
+{
+    H=0;
+    M=1;
+    L=0;
+
+}
+void low()
+{
+    
+    H=0;
+    M=0;
+    L=1;
+}
+void times()
+{
+    time1=t1;
+    time2=t2;
+    time3=t3;
+   
+}
+void timeron()
+{
+    //OPTION_REG = 0x07;
+    TMR0=60;
+    T0IE=1;
+    T0IF=0;
+    count=0;
+    times();
+}
+void timeroff()
+{  
+    T0IE=0;
+    t1=0;
+    t2=0;
+    t3=0;
+    times();
+}
+
+
+
+void Init()
+{
+  OPTION_REG = 0x07;
+  OSCCAL =0x2F;
+  CMCON = 7;
+  ANSEL = 0x00;      // configure all PORTA pins as digital 
+  TRISAbits.TRISA4 = 1;
+  TRISAbits.TRISA0 = 0;
+  TRISAbits.TRISA1 = 1;
+  TRISAbits.TRISA5 = 0;
+  TRISCbits.TRISC4 = 0;
+   TRISCbits.TRISC0 = 0;
+   TRISCbits.TRISC1 = 0;
+   TRISCbits.TRISC2 = 0;
+   TRISCbits.TRISC3 = 0;
+   TRISCbits.TRISC5 = 0;
+  TMR1IF = 0;     // clear Timer1 overflow interrupt flag bit
+  RAIF   = 0;     // clear PORTA change interrupt flag bit
+  TMR1IE = 1;     // enable Timer1 overflow interrupt
+  T1CON  = 0x10;  // 0b00010000    set Timer1 clock source to internal with 1:2 prescaler (Timer1 clock = 1MHz)
+  INTCON = 0xC8;  // enable global, peripheral and PORTA change interrupts
+  IOCA2  = 1;     // enable RA2 pin change interrupt
+  nec_ok = 0;
+  nec_state = 0; 
+  off();
+  value=EEPROM_READ(0x01);
+      G=EEPROM_READ(0x02);
+      check=value;
+      C=G;
+      buzz();
+}
+
+
+void main(void) {
+    Init();
+    
+    
+  while(1)
+  { 
+      
+      while (!nec_ok)
+      {       
+      switch(value){
+        case 0:
+            high();
+            break;
+        case 1:
+            med();
+            break;
+        case 2:
+            low();
+            break;
+        case 3:
+            off();
+            break;
+    }
+      output();
+      
+    if(button==0)
+    {
+        while(button==0)
+        {
+            
+        }   
+        sbut();
+    }
+       if(Grillbutton==0)
+    {
+        while(Grillbutton==0)
+        {
+            
+        }   
+        Gbut();
+   
+    }
+      if(check!=value || C!=G)
+          {
+          buzz();
+              write();
+              check=value;
+              C=G;
+          }
+       }
+     // wait until NEC code receiver   
+    nec_ok    = 0;   // reset decoding process
+    nec_state = 0;
+    TMR1ON    = 0;   // disable Timer1
+
+    switch (nec_code) {
+        case 0xFE:            //HIGH button
+            if(H==1 && M==0 && L==0){break;}
+
+            if(H==0 && M==0 && L==0)
+            {
+                value=0;
+            }
+            else if(H==0 && M==1 && L==0)
+            {
+                value=0;
+
+            }
+            else if(H==0 && M==0 && L==1)
+            {
+                value=1;
+
+            }
+            
+            break;
+        case 0xFA:            //GRILL button
+        if(H==0 && M==0 && L==0)
+        {
+            break;
+        }
+        G=~G;
+        
+        break;
+        
+        case 0xE4:            //TIMER button
+            if(H==0 && M==0 && L==0){break;}
+
+        if(t1==0 && t2==0 && t3==0)
+        {
+            
+            delays=72000; 
+            t1=1;
+            t2=0;
+            t3=0;
+            timeron();
+        }
+        else if(t1==1 && t2==0 && t3==0)
+        {
+            delays=144000;
+            t1=0;
+            t2=1;
+            t3=0;
+            timeron();
+        }
+        else if(t1==0 && t2==1 && t3==0)
+        {
+            delays=288000; 
+            t1=0;
+            t2=0;
+            t3=1;
+            timeron();
+        }
+        else if(t1==0 && t2==0 && t3==1)
+        {
+            timeroff();
+        }
+            buzz();
+        break;
+        
+        case 0xFC:            //LOW button
+            if(H==0 && M==0 && L==1){break;}
+
+             if(H==0 && M==0 && L==0)
+            {
+                value=2;
+
+            }
+            else if(H==0 && M==1 && L==0)
+            {
+                value=2;
+
+            }
+            else if(H==1 && M==0 && L==0)
+            {
+                value=1;
+
+            }
+            
+            break;
+        case 0xF8:            //OFF button
+            value=3;
+            G=0;
+            
+            
+        break;
+      }
+    
+    
+    RAIE = 1;    // enable PORTB change interrupt
+      
+      
+  }
+    return;
+}
+
+
+

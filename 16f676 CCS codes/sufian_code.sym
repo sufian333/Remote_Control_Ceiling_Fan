@@ -1,0 +1,101 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+019.6   C1OUT
+020     @SCRATCH
+021     @SCRATCH
+021     _RETURN_
+022     @SCRATCH
+023     @SCRATCH
+024     @INTERRUPT_AREA
+025     @INTERRUPT_AREA
+026     @INTERRUPT_AREA
+027     @INTERRUPT_AREA
+028     @INTERRUPT_AREA
+029     @INTERRUPT_AREA
+02A     @INTERRUPT_AREA
+02B     @INTERRUPT_AREA
+02C.0   H
+02C.1   M
+02C.2   L
+02C.3   G
+02C.4   t1
+02C.5   t2
+02C.6   t3
+02C.7   C
+02D.0   nec_ok
+02E     nec_state
+02F     i
+030     nec_code
+031-032 delays
+033-034 count
+035     value
+036     check
+037     @delay_ms1.P1
+037     write.@SCRATCH1
+037     sbut.@SCRATCH1
+037     Gbut.@SCRATCH1
+037     MAIN.@SCRATCH1
+038     sbut.@SCRATCH2
+038     Gbut.@SCRATCH2
+038     MAIN.@SCRATCH2
+039     sbut.@SCRATCH3
+039     Gbut.@SCRATCH3
+039     MAIN.@SCRATCH3
+03A-03B ext_isr.time
+03C     ext_isr.@SCRATCH1
+09B-09C @READ_PROGRAM_MEMORY8.P1
+
+ROM Allocation:
+000046  Timer0_isr
+00005C  ext_isr
+000130  @goto10522
+000139  timer1_isr
+000142  times
+00015B  timeroff
+000161  off
+00016B  buzz
+000171  @delay_ms1
+000189  Init
+0001B4  high
+0001B8  med
+0001BC  low
+0001C0  output
+0001E1  sbut
+000200  Gbut
+000209  write
+00023C  timeron
+000244  @cinit1
+000244  MAIN
+000254  @cinit2
+00032F  @goto10710
+
+Project Directory:
+    E:\Ahmad project\CCS\16f676 CCS codes\
+
+Project Files:
+    sufian_code.c                                           [09-Oct-20 00:15  CRC=985ABF32]
+    C:\Program Files (x86)\PICC\Devices\16F676.h            [12-Nov-13 14:34  CRC=20B87361]
+
+Source signature=D9CBA5F4
+
+Units:
+    sufian_code (main)
+
+Compiler Settings:
+    Processor:      PIC16F676
+    Pointer Size:   8
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    XREF file:   sufian_code.xsym
+    Errors:      sufian_code.err
+    Ext Symbols: sufian_code.esym
+    INHX8:       sufian_code.hex
+    Symbols:     sufian_code.sym
+    List:        sufian_code.lst
+    Debug/COFF:  sufian_code.cof
+    Project:     sufian_code.ccspjt
+    Call Tree:   sufian_code.tre
+    Statistics:  sufian_code.STA

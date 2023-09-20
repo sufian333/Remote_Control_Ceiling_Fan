@@ -1,0 +1,20 @@
+[PROJECT]
+Target=sufian_code.hex
+Processor_Text=PIC16F676
+CCSVersion=5.015
+Compiler=PCM
+[Target Data]
+FileList=sufian_code.c
+[Directories]
+Include=C:\Program Files (x86)\PICC\Devices\;C:\Program Files (x86)\PICC\Drivers\
+[sufian_code.c]
+Type=4
+[mru-list]
+1=sufian_code.c
+[Opened Files]
+1=sufian_code.c
+2=sufian_code.sta
+3=
+[Units]
+Count=1
+1=sufian_code (main)

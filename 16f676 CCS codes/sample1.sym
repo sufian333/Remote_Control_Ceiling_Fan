@@ -1,0 +1,67 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+019.6   C1OUT
+020     @SCRATCH
+021     @SCRATCH
+021     _RETURN_
+022     @SCRATCH
+023     @SCRATCH
+024     @INTERRUPT_AREA
+025     @INTERRUPT_AREA
+026     @INTERRUPT_AREA
+027     @INTERRUPT_AREA
+028     @INTERRUPT_AREA
+029     @INTERRUPT_AREA
+02A     @INTERRUPT_AREA
+02B     @INTERRUPT_AREA
+02C.0   nec_ok
+02D     nec_state
+02E     command
+02F     inv_command
+030     i
+031-032 address
+033-036 nec_code
+037     MAIN.@SCRATCH1
+038-039 ext_isr.time
+03A     ext_isr.@SCRATCH1
+03B     ext_isr.@SCRATCH2
+09B-09C @READ_PROGRAM_MEMORY8.P1
+
+ROM Allocation:
+000042  ext_isr
+00012E  @goto10504
+000137  timer1_isr
+000140  MAIN
+000140  @cinit1
+00014C  @cinit2
+
+Project Directory:
+    E:\Ahmad project\CCS\16f676 CCS codes\
+
+Project Files:
+    sample1.c                                               [08-Oct-20 17:40  CRC=C9981357]
+    C:\Program Files (x86)\PICC\Devices\16F676.h            [12-Nov-13 14:34  CRC=20B87361]
+
+Source signature=0B08FA19
+
+Units:
+    sample1 (main)
+
+Compiler Settings:
+    Processor:      PIC16F676
+    Pointer Size:   8
+    ADC Range:      0-255
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    XREF file:   sample1.xsym
+    Errors:      sample1.err
+    Ext Symbols: sample1.esym
+    INHX8:       sample1.hex
+    Symbols:     sample1.sym
+    List:        sample1.lst
+    Debug/COFF:  sample1.cof
+    Project:     sample1.ccspjt
+    Call Tree:   sample1.tre
+    Statistics:  sample1.STA
